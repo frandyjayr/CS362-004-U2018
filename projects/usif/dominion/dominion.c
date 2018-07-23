@@ -655,6 +655,7 @@ void adventurerCard(int drawntreasure, struct gameState *state, int currentPlaye
 	else{
 	  temphand[z]=cardDrawn;
 	  state->handCount[currentPlayer]--; //this should just remove the top card (the most recently drawn one).
+	  z++;	
 	}
       }
       while(z-1>=0){
@@ -706,7 +707,7 @@ void villageCard(int currentPlayer, struct gameState *state, int handPos) {
       state->numActions = state->numActions + 2;
 			
       //discard played card from hand
-//      discardCard(handPos, currentPlayer, state, 0);
+     // discardCard(handPos, currentPlayer, state, 0);
       discardCard(currentPlayer, handPos, state, 0);
 }
 

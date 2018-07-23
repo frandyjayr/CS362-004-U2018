@@ -1,0 +1,137 @@
+        -:    0:Source:cardtest2.c
+        -:    0:Graph:cardtest2.gcno
+        -:    0:Data:cardtest2.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include "dominion.h"
+        -:    2:#include <stdio.h>
+        -:    3:#include <stdlib.h>
+        -:    4:#include <time.h>
+        -:    5:
+        -:    6:// The following is a unit test for the village card function within the dominion.c/dominon.h file
+        -:    7:
+        1:    8:void testVillageCard() {
+        1:    9:	srand(time(NULL));
+        1:   10:	int seed = rand();
+        1:   11:	int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy};
+        -:   12:	
+        -:   13:	struct gameState g;
+        1:   14:	initializeGame(2, k, seed, &g);
+        1:   15:	int choice1 = -1, 
+        1:   16:	    choice2 = -1,
+        1:   17:	    choice3 = -1;	
+        1:   18:	int card = village;
+        1:   19:	int bonus = 0;
+        1:   20:	int handPos = 1;
+        1:   21:	int player1 = 0;
+        1:   22:	int player2 = 1;
+        1:   23:	int initialDeckCount = g.deckCount[player1];
+        1:   24:	int initialHandCount = g.handCount[player1];
+        1:   25:	int initialDeckCount2 = g.deckCount[player2];
+        1:   26:	int initialHandCount2 = g.handCount[player2];
+        1:   27:	g.hand[player1][handPos] = village;
+        -:   28:	int originalSupply[10];
+        -:   29:	int i;
+        1:   30:	int success = 1;
+       11:   31:	for (i = 0; i < 10; i++) {
+       10:   32:		originalSupply[i] = g.supplyCount[i];
+        -:   33:	}
+        -:   34:
+        1:   35:	printf("--------------- TESTING CARD: village ---------------\n");
+        1:   36:	printf("Test 1: Call the card function\n"); 
+        1:   37:	if (cardEffect(card, choice1, choice2, choice3, &g, handPos, &bonus) == 0) {
+        1:   38:		printf("villageCard(): PASS when test contains return value == 0\n");
+        -:   39:	} else {
+    #####:   40:		success = 0; 
+    #####:   41:		printf("villageCard(): FAIL when test contains return value == 0\n");
+        -:   42:	}
+        -:   43:
+        1:   44:	printf("Test 2: Check player 1 deck count\n"); 
+        1:   45:	if (g.deckCount[player1] == (initialDeckCount - 1)) {
+        1:   46:		printf("villageCard(): PASS when test contains new deckCount that is 1 less than the previous deckCount\n");
+        -:   47:	} else {
+    #####:   48:		success = 0; 
+    #####:   49:		printf("villageCard(): FAIL when test contains new deckCount that is 1 less than the previous deckCount\n");
+        -:   50:	}
+        -:   51:
+        1:   52:	printf("Test 3: Check player 1 hand count\n"); 
+        1:   53:	if (g.handCount[player1] == initialHandCount) {
+    #####:   54:		printf("villageCard(): PASS when test contains handCount that is equal to the previous deckCount\n");
+        -:   55:	} else {
+        1:   56:		success = 0; 
+        1:   57:		printf("villageCard(): FAIL when test contains handCount that is equal to the previous deckCount\n");
+        -:   58:	}
+        -:   59:
+        1:   60:	printf("Test 4: Check played card count\n"); 
+        1:   61:	if (g.playedCardCount == 1) {
+        1:   62:		printf("villageCard(): PASS when test contains playedCardCount of 1\n");
+        -:   63:	} else {
+    #####:   64:		success = 0; 
+    #####:   65:		printf("villageCard(): FAIL when test contains playedCardCount of 1\n");
+        -:   66:	}
+        -:   67:
+        1:   68:	printf("Test 5: Check number of actions\n"); 
+        1:   69:	if (g.numActions == 3) {
+        1:   70:		printf("villageCard(): PASS when test contains numActions == 3\n");
+        -:   71:	} else {
+    #####:   72:		success = 0; 
+    #####:   73:		printf("villageCard(): FAIL when test contains numActions == 3\n");
+        -:   74:	}
+        -:   75:
+        1:   76:	printf("Test 6: Check to see if village card is in the played cards pile\n"); 
+        1:   77:	if (g.playedCards[g.playedCardCount - 1] == village) {
+    #####:   78:		printf("villageCard(): PASS when test contains village card in the playedCards pile\n");
+        -:   79:	} else {
+        1:   80:		success = 0; 
+        1:   81:		printf("villageCard(): FAIL when test contains village card in the playedCards pile\n");
+        -:   82:	}
+        -:   83:
+        1:   84:	printf("Test 7: Check to see if player 2 deck count state is unchanged\n"); 
+        1:   85:	if (g.deckCount[player2] == initialDeckCount2) {
+        1:   86:		printf("villageCard(): PASS when test contains deckCount of player 2 state unchanged\n");
+        -:   87:	} else {
+    #####:   88:		success = 0; 
+    #####:   89:		printf("villageCard(): FAIL when test contains deckCount of player 2 state unchanged\n");
+        -:   90:	}
+        -:   91:
+        1:   92:	printf("Test 8: Check to see if player 2 hand count state is unchanged\n"); 
+        1:   93:	if (g.handCount[player2] == initialHandCount2) {
+    #####:   94:		printf("villageCard(): PASS when test contains handCount of player 2 state unchanged\n");
+        -:   95:	} else {
+        1:   96:		success = 0; 
+        1:   97:		printf("villageCard(): FAIL when test contains handCount of player 2 state unchanged\n");
+        -:   98:	}
+        -:   99:
+        1:  100:	printf("Test 9: Check to see if victory card supply state is unchanged\n"); 
+        1:  101:	if (g.supplyCount[estate] == 8 && g.supplyCount[duchy] == 8 && g.supplyCount[province] == 8) {
+        1:  102:		printf("villageCard(): PASS when test contains supply of victory card state unchanged\n");
+        -:  103:	} else {
+    #####:  104:		success = 0; 
+    #####:  105:		printf("villageCard(): FAIL when test contains supply of victory card state unchanged\n");
+        -:  106:	}
+        -:  107:
+        1:  108:	printf("Test 10: Check to see if kingdom card supply state is unchanged\n"); 
+        1:  109:	int isUnchanged = 1;
+       11:  110:	for (i = 0; i < 10; i++) {
+       10:  111:		if (g.supplyCount[i] != originalSupply[i]) {
+    #####:  112:			isUnchanged = 0;
+        -:  113:		}
+        -:  114:	} 
+        1:  115:	if (isUnchanged) {
+        1:  116:		printf("villageCard(): PASS when test contains supply of kingdom cards state unchanged\n");
+        -:  117:	} else {
+    #####:  118:		success = 0; 
+    #####:  119:		printf("villageCard(): FAIL when test contains supply of kingdom cards state unchanged\n");
+        -:  120:	}	
+        1:  121:	if (success) {
+    #####:  122:		printf("\n--------------- TESTING SUCCESS --------------- \n\n");
+        -:  123:	} else {
+        1:  124:		printf("\n--------------- TESTING FAILURE --------------- \n\n");
+        -:  125:	}
+        1:  126:	printf("\n--------------- TESTING COMPLETE for village --------------- \n\n");
+        1:  127:}
+        -:  128:
+        1:  129:int main(int argc, char* argv[]) {
+        1:  130:	testVillageCard();
+        1:  131:	return 0;
+        -:  132:}
