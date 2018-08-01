@@ -1,0 +1,133 @@
+        -:    0:Source:randomtestcard2.c
+        -:    0:Graph:randomtestcard2.gcno
+        -:    0:Data:randomtestcard2.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <time.h>
+        -:    3:#include <stdlib.h>
+        -:    4:#include <math.h>
+        -:    5:#include <string.h>
+        -:    6:#include "dominion.h"
+        -:    7:#include "dominion_helpers.h"
+        -:    8:
+        -:    9:#define MAX_TESTS 5
+        -:   10:
+        -:   11:enum Fails {cardEffectFail = 0, discardCardFail, drawCardFail, handCountFail, deckCountFail};  
+        -:   12:
+        -:   13:// The following program executes random tests for the smithycard
+        -:   14:
+     9000:   15:void randomizeGameState(struct gameState* G, int* p) {
+        -:   16:	// The following code was taken from CS362 Lecture
+        -:   17:	int i;
+236709000:   18:	for (i = 0; i < sizeof(struct gameState); i++) {
+236700000:   19:		((char*)G)[i] = rand() % 256 + 1;
+        -:   20:	}
+     9000:   21:	*p = rand() % (MAX_PLAYERS);
+     9000:   22:	G->numPlayers = *p;
+     9000:   23:	G->playedCardCount = rand() % MAX_DECK;
+     9000:   24:	G->deckCount[*p] = rand() % (MAX_DECK + 1);
+     9000:   25:	G->discardCount[*p] = rand() % (MAX_DECK + 1);
+     9000:   26:	G->handCount[*p] = rand() % (MAX_HAND + 1 - 1) + 1;
+     9000:   27:	G->whoseTurn = *p;
+     9000:   28:}
+        -:   29:
+     9000:   30:void testSmithyCard(struct gameState* post, int* failedTests, int* passedTests, int* p) {
+        -:   31:	struct gameState pre;
+     9000:   32:	memcpy(&pre, post, sizeof(struct gameState));
+        -:   33:
+     9000:   34:	int choice1 = 0,
+     9000:   35:	    choice2 = 0,
+     9000:   36:	    choice3 = 0; 
+     9000:   37:	int card = smithy;
+     9000:   38:	int bonus = 0;
+     9000:   39:	int handPos = 0;
+        -:   40:	int i;
+     9000:   41:	int fails = 0;
+        -:   42:
+     9000:   43:	if (cardEffect(card, choice1, choice2, choice3, post, handPos, &bonus)) {
+    #####:   44:		failedTests[cardEffectFail]++;
+        -:   45:	} else {
+     9000:   46:		passedTests[cardEffectFail]++;
+        -:   47:	}
+        -:   48:
+    36000:   49:	for (i = 0; i < 3; i++) {
+        -:   50:		// Call Draw card 3 times  
+    27000:   51:		if (drawCard(*p, &pre)) {
+        1:   52:			fails++;
+        -:   53:		}
+        -:   54:	} 
+     9000:   55:	if (fails > 0) {
+        1:   56:		failedTests[drawCardFail]++;
+        -:   57:	} else {
+     8999:   58:		passedTests[drawCardFail]++;
+        -:   59:	}
+        -:   60:
+        -:   61:	// Discard card and check for failures
+     9000:   62:	if (discardCard(handPos, *p, &pre, 0)) {
+    #####:   63:		failedTests[discardCardFail]++;	
+        -:   64:	} else {
+     9000:   65:		passedTests[discardCardFail]++;
+        -:   66:	}
+        -:   67:
+        -:   68:	// Check to see if the player succesfully drew the right amount of cards
+     9000:   69:	if (pre.handCount[*p] != post->handCount[*p]) {
+     8999:   70:		failedTests[handCountFail]++;
+        -:   71:	} else {
+        1:   72:		passedTests[handCountFail]++;
+        -:   73:	}
+        -:   74:
+        -:   75:	// Check to see if the number of cards in the deck are the same
+     9000:   76:	if (pre.deckCount[*p] != post->deckCount[*p]) {
+     8999:   77:		failedTests[deckCountFail]++;
+        -:   78:	} else {
+        1:   79:		passedTests[deckCountFail]++;
+        -:   80:	}
+        -:   81:	
+     9000:   82:}
+        -:   83:
+        1:   84:int main() {
+        1:   85:	int iterations = 9000;
+        1:   86:	printf("-------------------- TESTING SMITHY CARD ---------------------\n");
+        1:   87:	printf("NUMBER OF ITERATIONS: %i\n\n", iterations);
+        1:   88:	srand(time(NULL));
+        1:   89:	int* failedTests = malloc(sizeof(int) *	MAX_TESTS);
+        1:   90:	int* passedTests = malloc(sizeof(int) * MAX_TESTS);
+        1:   91:	int numberOfFailures = 0;
+        -:   92:	int i;
+        -:   93:
+     9001:   94:	for (int i = 0; i < iterations; i++) {
+     9000:   95:		struct gameState *G = malloc(sizeof(struct gameState));
+     9000:   96:		int* p = malloc(sizeof(int));
+     9000:   97:		randomizeGameState(G,p);
+     9000:   98:		testSmithyCard(G, failedTests, passedTests, p);
+     9000:   99:		free(G);
+     9000:  100:		free(p);
+        -:  101:	}
+        -:  102:
+        1:  103:	printf("Number of cardEffect() failures: %i\n", failedTests[cardEffectFail]);
+        1:  104:	printf("Number of drawCard() failures: %i\n", failedTests[drawCardFail]);
+        1:  105:	printf("Number of discardCard() failures: %i\n", failedTests[discardCardFail]);
+        1:  106:	printf("Number of handCount failures: %i\n", failedTests[handCountFail]);
+        1:  107:	printf("Number of deckCount failures: %i\n", failedTests[deckCountFail]);
+        1:  108:	printf("\n");
+        -:  109:
+        1:  110:	printf("Number of cardEffect() passes: %i\n", passedTests[cardEffectFail]);
+        1:  111:	printf("Number of drawCard() passes: %i\n", passedTests[drawCardFail]);
+        1:  112:	printf("Number of discardCard() passes: %i\n", passedTests[discardCardFail]);
+        1:  113:	printf("Number of handCount passes: %i\n", passedTests[handCountFail]);
+        1:  114:	printf("Number of deckCount passes: %i\n", passedTests[deckCountFail]);
+        1:  115:	printf("\n");
+        -:  116:
+        6:  117:	for (i = 0; i < MAX_TESTS; i++) {
+        5:  118:		numberOfFailures = numberOfFailures + failedTests[i];
+        -:  119:	}
+        -:  120:
+        1:  121:	if (numberOfFailures == 0) {
+    #####:  122:		printf("RANDOM TESTS SUCCESSFULL!\n");
+        -:  123:	} else {
+        1:  124:		printf("RANDOM TESTS FAILURE!\n");	
+        -:  125:	}
+        1:  126:	return 0;	
+        -:  127:	
+        -:  128:}
