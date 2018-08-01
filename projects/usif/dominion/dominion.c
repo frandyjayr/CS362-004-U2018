@@ -644,17 +644,18 @@ int getCost(int cardNumber)
 }
 
 void adventurerCard(int drawntreasure, struct gameState *state, int currentPlayer, int cardDrawn, int temphand[], int z) {
-      while(drawntreasure<2){
+      while(drawntreasure<=2){
 	if (state->deckCount[currentPlayer] <1){//if the deck is empty we need to shuffle discard and add to deck
 	  shuffle(currentPlayer, state);
 	}
 	drawCard(currentPlayer, state);
 	cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer]-1];//top card of hand is most recently drawn card.
-	if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
-	  drawntreasure++;
+	if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold) {
+	  drawntreasure++; }
 	else{
 	  temphand[z]=cardDrawn;
 	  state->handCount[currentPlayer]--; //this should just remove the top card (the most recently drawn one).
+	  z++;
 	}
       }
       while(z-1>=0){
@@ -664,8 +665,8 @@ void adventurerCard(int drawntreasure, struct gameState *state, int currentPlaye
 }
 
 void smithyCard(int currentPlayer, struct gameState *state, int handPos) {
-  //+3 Cards
-  for (int i = 0; i <= 3; i++)
+  //+3 Cards NOTE THIS IS AN INTRODUCED BUG
+  for (int i = 0; i < 2; i++)
 	{
 	  drawCard(currentPlayer, state);
 	}
@@ -701,13 +702,14 @@ void councilRoomCard(int currentPlayer, struct gameState *state, int handPos) {
 void villageCard(int currentPlayer, struct gameState *state, int handPos) {
       //+1 Card
       drawCard(currentPlayer, state);
-			
+      // NOTE THIS SECOND DRAW CARD IS A BUG INTRODUCED ON PURPOSE	
+      drawCard(currentPlayer, state);
       //+2 Actions
       state->numActions = state->numActions + 2;
 			
       //discard played card from hand
-//      discardCard(handPos, currentPlayer, state, 0);
-      discardCard(currentPlayer, handPos, state, 0);
+      discardCard(handPos, currentPlayer, state, 0);
+      //discardCard(currentPlayer, handPos, state, 0);
 }
 
 void greatHallCard(int currentPlayer, struct gameState *state, int handPos) {
@@ -1256,7 +1258,6 @@ int discardCard(int handPos, int currentPlayer, struct gameState *state, int tra
 	
   //set played card to -1
   state->hand[currentPlayer][handPos] = -1;
-	
   //remove card from player's hand
   if ( handPos == (state->handCount[currentPlayer] - 1) ) 	//last card in hand array is played
     {
