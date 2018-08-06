@@ -1,0 +1,132 @@
+        -:    0:Source:cardtest4.c
+        -:    0:Graph:cardtest4.gcno
+        -:    0:Data:cardtest4.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include "dominion.h"
+        -:    2:#include "dominion_helpers.h"
+        -:    3:#include <stdio.h>
+        -:    4:#include <stdlib.h>
+        -:    5:#include <time.h>
+        -:    6:
+        -:    7:// The following is a unit test for the adventurer card function within the dominion.c/dominon.h file
+        -:    8:
+        1:    9:void testAdventurerCard() {
+        1:   10:	srand(time(NULL));
+        1:   11:	int seed = rand();
+        1:   12:	int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy};
+        -:   13:	
+        -:   14:	struct gameState g;
+        1:   15:	initializeGame(2, k, seed, &g);
+        1:   16:	int choice1 = -1, 
+        1:   17:	    choice2 = -1,
+        1:   18:	    choice3 = -1;	
+        1:   19:	int card = adventurer;
+        1:   20:	int bonus = 0;
+        1:   21:	int handPos = 1;
+        1:   22:	int player1 = 0;
+        1:   23:	int player2 = 1;
+        1:   24:	int initialHandCount = g.handCount[player1];
+        1:   25:	int initialHandCount2 = g.handCount[player2];
+        1:   26:	int initialDeckCount2 = g.deckCount[player2];
+        -:   27:	int originalSupply[10];
+        -:   28:	int i;
+        1:   29:	int success = 1;
+       11:   30:	for (i = 0; i < 10; i++) {
+       10:   31:		originalSupply[i] = g.supplyCount[i];
+        -:   32:	}
+        -:   33:
+        1:   34:	printf("--------------- TESTING CARD: Adventurer ---------------\n");
+        1:   35:	printf("Test 1: Call card function\n");
+        1:   36:	if (cardEffect(card, choice1, choice2, choice3, &g, handPos, &bonus) == 0) {
+        1:   37:		printf("adventurerCard(): PASS when test contains return value == 0\n");
+        -:   38:	} else {
+    #####:   39:		success = 0;
+    #####:   40:		printf("adventurerCard(): FAIL when test contains return value == 0\n");
+        -:   41:	}
+        -:   42:
+        1:   43:	printf("Test 2: Check player 1 hand count\n");
+        1:   44:	if (g.handCount[player1] == (initialHandCount + 1)) {
+    #####:   45:		printf("adventurerCard(): PASS when test contains handCount that is 1 more than the previous handCount\n");
+        -:   46:	} else {
+        1:   47:		success = 0;
+        1:   48:		printf("adventurerCard(): FAIL when test contains handCount that is 1 more than the previous handCount\n");
+        -:   49:	}
+        -:   50:
+        1:   51:	printf("Test 3: Check played card count\n");
+        1:   52:	if (g.playedCardCount == 1) {
+    #####:   53:		printf("adventurerCard(): PASS when test contains playedCardCount of 1\n");
+        -:   54:	} else {
+        1:   55:		success = 0;
+        1:   56:		printf("adventurerCard(): FAIL when test contains playedCardCount of 1\n");
+        -:   57:	}
+        -:   58:
+        1:   59:	printf("Test 4: Check first card player 1 draws\n");
+        1:   60:	int newCard1 = g.hand[player1][g.handCount[player1] - 2];
+        1:   61:	if (newCard1 == copper || newCard1 == silver || newCard1 == gold) {
+        1:   62:		printf("adventurerCard(): PASS when test contains the first new card that is copper, silver, or gold\n");
+        -:   63:	} else {
+    #####:   64:		success = 0;
+    #####:   65:		printf("adventurerCard(): FAIL when test contains the first new card that is copper, silver, or gold\n");
+        -:   66:	}
+        -:   67:
+        1:   68:	printf("Test 5: Check second card player 1 draws\n");
+        1:   69:	int newCard2 = g.hand[player1][g.handCount[player1] - 1];
+        1:   70:	if (newCard2 == copper || newCard2 == silver || newCard2 == gold) {
+        1:   71:		printf("adventurerCard(): PASS when test contains the second new card that is copper, silver, or gold\n");
+        -:   72:	} else {
+    #####:   73:		success = 0;
+    #####:   74:		printf("adventurerCard(): FAIL when test contains the second new card that is copper, silver, or gold\n");
+        -:   75:	}
+        -:   76:
+        1:   77:	printf("Test 6: Check player 2 deck count state is unchanged\n");
+        1:   78:	if (g.deckCount[player2] == initialDeckCount2) {
+        1:   79:		printf("adventurerCard(): PASS when test contains deckCount of player 2 state unchanged\n");
+        -:   80:	} else {
+    #####:   81:		success = 0;
+    #####:   82:		printf("adventurerCard(): FAIL when test contains deckCount of player 2 state unchanged\n");
+        -:   83:	}
+        -:   84:
+        1:   85:	printf("Test 7: Check player 2 hand count state is unchanged\n");
+        1:   86:	if (g.handCount[player2] == initialHandCount2) {
+        1:   87:		printf("adventurerCard(): PASS when test contains handCount of player 2 state unchanged\n");
+        -:   88:	} else {
+    #####:   89:		success = 0;
+    #####:   90:		printf("adventurerCard(): FAIL when test contains handCount of player 2 state unchanged\n");
+        -:   91:	}
+        -:   92:
+        1:   93:	printf("Test 8: Check victory card state supply is unchanged\n");
+        1:   94:	if (g.supplyCount[estate] == 8 && g.supplyCount[duchy] == 8 && g.supplyCount[province] == 8) {
+        1:   95:		printf("adventurerCard(): PASS when test contains victory card state unchanged\n");
+        -:   96:	} else {
+    #####:   97:		success = 0;
+    #####:   98:		printf("adventurerCard(): FAIL when test contains victory card state unchanged\n");
+        -:   99:	}
+        -:  100:
+        1:  101:	printf("Test 9: Check kingdom card state supply is unchanged\n");
+        1:  102:	int isUnchanged = 1;
+       11:  103:	for (i = 0; i < 10; i++) {
+       10:  104:		if (g.supplyCount[i] != originalSupply[i]) {
+    #####:  105:			isUnchanged = 0;
+        -:  106:		}
+        -:  107:	}  
+        1:  108:	if (isUnchanged) {
+        1:  109:		printf("adventurerCard(): PASS when test contains supply of kingdom cards state unchanged\n"); 
+        -:  110:	} else {
+    #####:  111:		success = 0;
+    #####:  112:		printf("adventurerCard(): FAIL when test contains supply of kingdom cards state unchanged\n"); 
+        -:  113:	}
+        -:  114:
+        1:  115:	if (success) {
+    #####:  116:		printf("\n\n---------------- TESTING SUCCESS --------------- \n");
+        -:  117:	} else {
+        1:  118:		printf("\n\n---------------- TESTING FAILURE --------------- \n");
+        -:  119:	}
+        1:  120:	printf("\n\n---------------- TESTING COMPLETE for Adventurer --------------- \n");
+        -:  121:	
+        1:  122:}
+        -:  123:
+        1:  124:int main(int argc, char* argv[]) {
+        1:  125:	testAdventurerCard();
+        1:  126:	return 0;
+        -:  127:}

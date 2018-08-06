@@ -1,0 +1,37 @@
+        -:    0:Source:unittest1.c
+        -:    0:Graph:unittest1.gcno
+        -:    0:Data:unittest1.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include "dominion.h"
+        -:    2:#include <stdio.h>
+        -:    3:
+        -:    4:// The following is a unit test for the newGame function within the dominion.c/dominon.h file
+        -:    5:
+        1:    6:void testNewGame() {
+        -:    7:	struct gameState* gameStateTest;
+        -:    8:
+        1:    9:	gameStateTest = NULL;
+        1:   10:	gameStateTest = newGame();
+        1:   11:	int success = 1;
+        -:   12:
+        1:   13:	printf("----------------- TESTING FUNCTION: newGame() ---------------\n");
+        1:   14:	printf("Test 1: Test for struct initialization\n");
+        1:   15:	if (gameStateTest != NULL) {
+        1:   16:		printf("newGame(): PASS when test contains a gameState struct not NULL\n");
+        -:   17:	} else {
+    #####:   18:		printf("newGame(): FAIL when test contains a gameState struct not NULL\n");
+    #####:   19:		success = 0;
+        -:   20:	}
+        1:   21:	if (success) {
+        1:   22:		printf("\n----------------- TESTING SUCCESS ---------------\n");
+        -:   23:	} else {
+    #####:   24:		printf("\n----------------- TESTING FAILURE ---------------\n");
+        -:   25:	}
+        1:   26:	printf("\n----------------- TESTING COMPLETE for newGame() ---------------\n");
+        1:   27:}
+        -:   28:
+        1:   29:int main(int argc, char* argv[]) {
+        1:   30:	testNewGame();
+        1:   31:	return 0;
+        -:   32:}
